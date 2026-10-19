@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boiler Digital Twin Operator Console</title>
+  <style>
+    :root{
+      --bg:#eef3f8;--panel:#fff;--nav:#0b1728;--nav2:#12233a;--text:#172033;
+      --muted:#667085;--line:#dce4ee;--orange:#f97316;--blue:#2563eb;
+      --green:#059669;--red:#dc2626;--amber:#d97706;--shadow:0 10px 30px rgba(15,23,42,.08)
+    }
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    button,input,select{font:inherit}.shell{min-height:100vh}.topbar{position:sticky;top:0;z-index:10;background:linear-gradient(105deg,var(--nav),var(--nav2));color:white;padding:18px 26px;box-shadow:0 4px 18px rgba(0,0,0,.2)}
+    .topinner{max-width:1500px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand h1{font-size:22px;margin:0 0 5px;display:flex;align-items:center;gap:10px}.brand p{margin:0;color:#b9c6d7;font-size:13px}.statusbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.pill{padding:7px 11px;border-radius:999px;font-weight:700;font-size:12px;background:#334155}.pill.ready{background:#334155}.pill.running{background:var(--blue)}.pill.converged{background:var(--green)}.pill.failed{background:var(--red)}
+    .main{max-width:1500px;margin:auto;padding:22px}.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}.tab{border:1px solid var(--line);background:#fff;color:#475467;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:700}.tab.active{background:var(--nav);color:#fff;border-color:var(--nav)}
+    .page{display:none}.page.active{display:block}.layout{display:grid;grid-template-columns:410px minmax(0,1fr);gap:18px}.card{background:var(--panel);border:1px solid #e5ebf2;border-radius:18px;box-shadow:var(--shadow)}.cardhead{padding:17px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.cardhead h2,.cardhead h3{margin:0;font-size:16px}.cardbody{padding:18px}.section-title{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#344054;margin:4px 0 12px;font-weight:800}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:#475467;font-weight:700}.inputwrap{position:relative}.inputwrap input,.field select{width:100%;height:41px;border:1px solid #cfd8e3;border-radius:9px;padding:0 62px 0 11px;background:#fff;outline:none}.field select{padding-right:10px}.inputwrap input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12)}.unit{position:absolute;right:10px;top:13px;font-size:11px;color:#667085}.divider{height:1px;background:var(--line);margin:18px 0}.totals{display:flex;justify-content:space-between;padding:9px 11px;background:#f8fafc;border-radius:9px;font-size:12px;margin-top:10px}.actions{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:18px}.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:800;cursor:pointer}.btn.primary{background:var(--orange);color:white}.btn.primary:hover{background:#ea580c}.btn.secondary{background:#eef2f6;color:#344054}.btn.danger{background:#fee2e2;color:#991b1b}.btn:disabled{opacity:.5;cursor:not-allowed}.validation{display:none;margin-top:12px;padding:10px;border-radius:9px;background:#fee2e2;color:#991b1b;font-size:12px}.rightcol{display:flex;flex-direction:column;gap:18px}.progress-card{padding:18px}.progress-meta{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:9px}.progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--blue),#38bdf8);transition:width .4s}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}.step{padding:9px;border-radius:9px;background:#f2f4f7;color:#667085;font-size:11px;text-align:center;font-weight:700}.step.done{background:#dcfce7;color:#166534}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.kpi{padding:17px}.kpi .label{font-size:12px;color:#667085}.kpi .value{font-size:26px;font-weight:850;margin:9px 0 4px}.kpi .note{font-size:11px;color:#98a2b3}.green{color:var(--green)}.orange{color:var(--orange)}.blue{color:var(--blue)}.amber{color:var(--amber)}
+    .charts{display:grid;grid-template-columns:1.45fr .75fr;gap:18px}.chartbox{padding:18px}.chart-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.chart-title h3{margin:0;font-size:15px}.legend{font-size:11px;color:#667085;display:flex;gap:10px;flex-wrap:wrap}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}.canvaswrap{height:310px;position:relative}.canvaswrap canvas{width:100%;height:100%}.log{height:310px;background:#09111d;color:#b9f6ca;padding:13px;border-radius:12px;overflow:auto;font:12px/1.65 Consolas,monospace;white-space:pre-wrap}.empty{color:#8290a3}.tablewrap{overflow:auto}.history{width:100%;border-collapse:collapse;font-size:12px}.history th,.history td{padding:11px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}.history th{background:#f8fafc;color:#475467}.badge{padding:4px 8px;border-radius:999px;font-weight:800;font-size:10px}.badge.ok{background:#dcfce7;color:#166534}.badge.warn{background:#fef3c7;color:#92400e}.comparegrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.coalbox{padding:18px}.recommend{padding:16px;border-left:4px solid var(--green);background:#ecfdf5;border-radius:10px;margin-bottom:10px}.note-box{padding:12px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;font-size:12px;margin-top:14px}.footer{max-width:1500px;margin:0 auto;padding:0 22px 25px;color:#667085;font-size:11px}.modal{display:none;position:fixed;inset:0;background:rgba(2,6,23,.65);z-index:30;align-items:center;justify-content:center;padding:20px}.modal.open{display:flex}.modalbox{background:#fff;max-width:520px;width:100%;border-radius:18px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.3)}.modalbox h2{margin-top:0}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+    @media(max-width:1100px){.layout{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.charts{grid-template-columns:1fr}.comparegrid{grid-template-columns:1fr}}
+    @media(max-width:650px){.main{padding:12px}.topbar{padding:15px}.topinner{align-items:flex-start;flex-direction:column}.formgrid,.kpis,.steps{grid-template-columns:1fr}.statusbar{width:100%}.canvaswrap{height:260px}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar"><div class="topinner">
+    <div class="brand"><h1><span>🔥</span> Boiler Digital Twin Operator Console</h1><p>Fixed geometry · Variable coal, load and ambient conditions · ANSYS integration-ready demo</p></div>
+    <div class="statusbar"><span id="statusPill" class="pill ready">READY</span><span id="lastRun" style="font-size:12px;color:#b9c6d7">Last run: Not run yet</span><button class="btn secondary" onclick="openAbout()">System Info</button></div>
+  </div></header>
+
+  <main class="main">
+    <nav class="tabs">
+      <button class="tab active" data-page="operator">Operator Console</button>
+      <button class="tab" data-page="history">Run History</button>
+      <button class="tab" data-page="compare">Coal Comparison</button>
+      <button class="tab" data-page="recommendations">Recommendations</button>
+    </nav>
+
+    <section id="operator" class="page active">
+      <div class="layout">
+        <aside class="card">
+          <div class="cardhead"><h2>⚙️ Operator Inputs</h2><span style="font-size:11px;color:#667085">Model: Boiler_A_v1</span></div>
+          <div class="cardbody">
+            <div class="section-title">Operating condition</div>
+            <div class="formgrid">
+              <div class="field"><label>Coal GCV</label><div class="inputwrap"><input id="gcv" type="number" value="3000" min="1500" max="7000"><span class="unit">kcal/kg</span></div></div>
+              <div class="field"><label>Unit load</label><div class="inputwrap"><input id="load" type="number" value="500" min="50" max="1000"><span class="unit">MW</span></div></div>
+              <div class="field"><label>Season</label><select id="season"><option>Summer</option><option>Monsoon</option><option>Winter</option></select></div>
+              <div class="field"><label>Ambient temperature</label><div class="inputwrap"><input id="temp" type="number" value="42"><span class="unit">°C</span></div></div>
+              <div class="field"><label>Relative humidity</label><div class="inputwrap"><input id="humidity" type="number" value="35" min="0" max="100"><span class="unit">%</span></div></div>
+              <div class="field"><label>Excess air</label><div class="inputwrap"><input id="excessAir" type="number" value="18" min="0" max="100"><span class="unit">%</span></div></div>
+            </div>
+            <div class="divider"></div>
+            <div class="section-title">Ultimate analysis</div>
+            <div class="formgrid">
+              <div class="field"><label>Carbon</label><div class="inputwrap"><input id="carbon" type="number" value="45" step="0.1"><span class="unit">%</span></div></div>
+              <div class="field"><label>Hydrogen</label><div class="inputwrap"><input id="hydrogen" type="number" value="3.2" step="0.1"><span class="unit">%</span></div></div>
+              <div class="field"><label>Oxygen</label><div class="inputwrap"><input id="oxygen" type="number" value="8.5" step="0.1"><span class="unit">%</span></div></div>
+              <div class="field"><label>Nitrogen</label><div class="inputwrap"><input id="nitrogen" type="number" value="1.1" step="0.1"><span class="unit">%</span></div></div>
+              <div class="field"><label>Sulfur</label><div class="inputwrap"><input id="sulfur" type="number" value="0.5" step="0.1"><span class="unit">%</span></div></div>
+              <div class="field"><label>Ash</label><div class="inputwrap"><input id="ash" type="number" value="30" step="0.1"><span class="unit">%</span></div></div>
+              <div class="field"><label>Moisture</label><div class="inputwrap"><input id="moisture" type="number" value="11.7" step="0.1"><span class="unit">%</span></div></div>
+            </div>
+            <div class="totals"><span>Analysis total</span><strong id="analysisTotal">100.0%</strong></div>
+            <div id="validation" class="validation">Please check the inputs. Humidity must be 0–100%, values cannot be negative, and the coal analysis should total approximately 100%.</div>
+            <div class="note-box">Demo mode: calculations and convergence are simulated in the browser. No ANSYS model is being executed.</div>
+            <div class="actions"><button id="runBtn" class="btn primary" onclick="runSimulation()">▶ Run ANSYS Model</button><button class="btn secondary" onclick="resetInputs()">↻ Reset</button></div>
+          </div>
+        </aside>
+
+        <div class="rightcol">
+          <div class="card progress-card">
+            <div class="progress-meta"><span id="jobText">Simulation job ready</span><span id="progressText">0%</span></div>
+            <div class="progress"><div id="progressBar" class="bar"></div></div>
+            <div class="steps"><div class="step" id="s1">1. Validate inputs</div><div class="step" id="s2">2. Update parameters</div><div class="step" id="s3">3. Solve CFD model</div><div class="step" id="s4">4. Return results</div></div>
+          </div>
+
+          <div class="kpis">
+            <div class="card kpi"><div class="label">Boiler efficiency</div><div id="eff" class="value green">--</div><div class="note">Target ≥ 82%</div></div>
+            <div class="card kpi"><div class="label">Furnace exit gas temperature</div><div id="fegt" class="value orange">--</div><div class="note">ANSYS monitor output</div></div>
+            <div class="card kpi"><div class="label">Estimated NOx</div><div id="nox" class="value blue">--</div><div class="note">mg/Nm³</div></div>
+            <div class="card kpi"><div class="label">Heat rate</div><div id="heatRate" class="value amber">--</div><div class="note">kcal/kWh</div></div>
+          </div>
+
+          <div class="charts">
+            <div class="card chartbox"><div class="chart-title"><h3>Solver convergence</h3><div class="legend"><span><i class="dot" style="background:#2563eb"></i>Continuity</span><span><i class="dot" style="background:#f97316"></i>Energy</span><span><i class="dot" style="background:#059669"></i>Turbulence</span></div></div><div class="canvaswrap"><canvas id="chart"></canvas></div></div>
+            <div class="card chartbox"><div class="chart-title"><h3>Solver/Event Log</h3><button class="btn secondary" style="padding:6px 9px" onclick="clearLog()">Clear</button></div><div id="log" class="log"><span class="empty">Awaiting simulation...</span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="history" class="page"><div class="card"><div class="cardhead"><h2>Simulation Run History</h2><button class="btn secondary" onclick="exportHistory()">Export CSV</button></div><div class="cardbody tablewrap"><table class="history"><thead><tr><th>Run ID</th><th>Date/Time</th><th>GCV</th><th>Load</th><th>Season</th><th>Efficiency</th><th>FEGT</th><th>NOx</th><th>Status</th></tr></thead><tbody id="historyBody"><tr><td colspan="9" style="text-align:center;color:#667085">No completed simulations yet.</td></tr></tbody></table></div></div></section>
+
+    <section id="compare" class="page"><div class="comparegrid"><div class="card coalbox"><h2>Coal A: Current case</h2><p>Uses the latest operator inputs.</p><div id="coalA" class="note-box">Run a case to populate Coal A results.</div></div><div class="card coalbox"><h2>Coal B: Alternative</h2><div class="formgrid"><div class="field"><label>GCV</label><div class="inputwrap"><input id="gcvB" type="number" value="3400"><span class="unit">kcal/kg</span></div></div><div class="field"><label>Ash</label><div class="inputwrap"><input id="ashB" type="number" value="26"><span class="unit">%</span></div></div><div class="field"><label>Moisture</label><div class="inputwrap"><input id="moistureB" type="number" value="10"><span class="unit">%</span></div></div></div><button class="btn primary" style="margin-top:16px" onclick="compareCoal()">Compare Coal</button><div id="compareResult"></div></div></div></section>
+
+    <section id="recommendations" class="page"><div class="card"><div class="cardhead"><h2>Optimization Recommendations</h2><span class="badge warn">DEMO RULE ENGINE</span></div><div class="cardbody" id="recommendationList"><div class="recommend"><strong>Run a simulation first.</strong><br><span style="font-size:12px">Recommendations will be generated from the latest operating case.</span></div></div></div></section>
+  </main>
+  <div class="footer">Boiler Digital Twin HTML Demonstrator · Front-end prototype only · Replace the simulated JavaScript runner with a secure backend API connected to ANSYS/PyFluent for production use.</div>
+</div>
+
+<div id="aboutModal" class="modal"><div class="modalbox"><h2>System Information</h2><p><strong>Mode:</strong> Browser-only demonstration</p><p><strong>Geometry:</strong> Fixed client boiler model</p><p><strong>Variable inputs:</strong> Coal, load, ambient conditions</p><p><strong>Production connection:</strong> REST API → Python service → ANSYS solver</p><div class="modal-actions"><button class="btn primary" onclick="closeAbout()">Close</button></div></div></div>
+
+<script>
+const ids=['gcv','load','temp','humidity','excessAir','carbon','hydrogen','oxygen','nitrogen','sulfur','ash','moisture'];
+let running=false, runs=[], latest=null, chartData=[];
+const $=id=>document.getElementById(id), val=id=>Number($(id).value);
+ids.forEach(id=>$(id).addEventListener('input', updateTotal));
+
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));btn.classList.add('active');$(btn.dataset.page).classList.add('active');if(btn.dataset.page==='operator')setTimeout(drawChart,50)}));
+
+function updateTotal(){const total=['carbon','hydrogen','oxygen','nitrogen','sulfur','ash','moisture'].reduce((s,id)=>s+val(id),0);$('analysisTotal').textContent=total.toFixed(1)+'%';$('analysisTotal').style.color=Math.abs(total-100)<=3?'#059669':'#dc2626';}
+function validate(){const total=['carbon','hydrogen','oxygen','nitrogen','sulfur','ash','moisture'].reduce((s,id)=>s+val(id),0);const nonneg=ids.every(id=>Number.isFinite(val(id))&&val(id)>=0);const ok=nonneg&&val('humidity')<=100&&val('gcv')>=1500&&val('load')>0&&Math.abs(total-100)<=3;$('validation').style.display=ok?'none':'block';return ok;}
+function log(msg){const el=$('log');if(el.querySelector('.empty'))el.innerHTML='';const stamp=new Date().toLocaleTimeString();el.textContent+=`[${stamp}] ${msg}\n`;el.scrollTop=el.scrollHeight;}
+function setStatus(s){const p=$('statusPill');p.textContent=s.toUpperCase();p.className='pill '+s.toLowerCase();}
+function setProgress(p,label){$('progressBar').style.width=p+'%';$('progressText').textContent=p+'%';$('jobText').textContent=label;[1,2,3,4].forEach((n,i)=>$('s'+n).classList.toggle('done',p>=[10,30,55,100][i]));}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function runSimulation(){if(running||!validate())return;running=true;$('runBtn').disabled=true;setStatus('running');clearLog();chartData=[];drawChart();
+  const phases=[[10,'Inputs validated','Input validation completed.'],[30,'Updating model parameters','Coal properties and boundary conditions mapped.'],[48,'Initializing CFD solver','Hybrid initialization started.'],[60,'Solving: iteration 50','Residual monitors streaming.'],[72,'Solving: iteration 100','Energy and turbulence residuals decreasing.'],[84,'Solving: iteration 150','Monitored values approaching stability.'],[94,'Checking convergence','Mass balance and monitor stability checked.'],[100,'Simulation converged','Results extracted and returned to dashboard.']];
+  for(let i=0;i<phases.length;i++){await sleep(520);const [p,label,msg]=phases[i];setProgress(p,label);log(msg);if(p>=48){const iter=(i-2)*50;chartData.push({i:Math.max(0,iter),c:Math.pow(10,-Math.max(0,i-2)*.72),e:Math.pow(10,-Math.max(0,i-2)*.92),t:Math.pow(10,-Math.max(0,i-2)*.65)});drawChart();}}
+  const eff=Math.max(55,Math.min(92,86.4+(val('gcv')-3000)/1200-val('moisture')*.09-val('ash')*.035-val('excessAir')*.015));
+  const fegt=980+val('load')*.30+(val('temp')-25)*1.4+val('gcv')*.012;
+  const nox=145+val('load')*.13+val('nitrogen')*16+val('temp')*.45-val('moisture')*.8;
+  const hr=860/(eff/100);
+  latest={id:'RUN-'+String(runs.length+1).padStart(3,'0'),time:new Date(),gcv:val('gcv'),load:val('load'),season:$('season').value,eff,fegt,nox,hr,status:'Converged'};runs.unshift(latest);updateResults();updateHistory();updateRecommendations();setStatus('converged');$('lastRun').textContent='Last run: '+latest.time.toLocaleString();log('Case saved as '+latest.id+'.');running=false;$('runBtn').disabled=false;
+}
+function updateResults(){$('eff').textContent=latest.eff.toFixed(2)+'%';$('fegt').textContent=latest.fegt.toFixed(0)+' °C';$('nox').textContent=latest.nox.toFixed(0);$('heatRate').textContent=latest.hr.toFixed(0);$('coalA').innerHTML=`<strong>${latest.id}</strong><br>Efficiency: ${latest.eff.toFixed(2)}%<br>FEGT: ${latest.fegt.toFixed(0)} °C<br>NOx: ${latest.nox.toFixed(0)} mg/Nm³`;}
+function updateHistory(){const b=$('historyBody');b.innerHTML=runs.map(r=>`<tr><td>${r.id}</td><td>${r.time.toLocaleString()}</td><td>${r.gcv} kcal/kg</td><td>${r.load} MW</td><td>${r.season}</td><td>${r.eff.toFixed(2)}%</td><td>${r.fegt.toFixed(0)} °C</td><td>${r.nox.toFixed(0)}</td><td><span class="badge ok">${r.status}</span></td></tr>`).join('');}
+function updateRecommendations(){if(!latest)return;let rec=[];if(val('excessAir')>15)rec.push(['Review excess air','A controlled reduction may improve dry-gas loss. Validate CO and flame stability before implementation.']);if(val('moisture')>10)rec.push(['High fuel moisture','Review coal drying and mill outlet temperature within approved operating limits.']);if(val('ash')>28)rec.push(['High ash loading','Review mill performance, erosion risk, soot-blowing schedule and ash evacuation capacity.']);if(latest.fegt>1150)rec.push(['Elevated FEGT','Check furnace heat absorption, slagging tendency and cleanliness indicators.']);if(latest.eff<82)rec.push(['Efficiency below target','Review air ingress, unburnt carbon, excess air and coal quality together.']);if(!rec.length)rec.push(['Operating case within demo targets','Continue monitoring residual stability and key plant constraints.']);$('recommendationList').innerHTML=rec.map(x=>`<div class="recommend"><strong>${x[0]}</strong><br><span style="font-size:12px">${x[1]}</span></div>`).join('');}
+function compareCoal(){if(!latest){$('compareResult').innerHTML='<div class="validation" style="display:block">Run the current case first.</div>';return;}const g=Number($('gcvB').value),a=Number($('ashB').value),m=Number($('moistureB').value);const effB=Math.max(55,Math.min(92,86.4+(g-3000)/1200-m*.09-a*.035-val('excessAir')*.015));const delta=effB-latest.eff;$('compareResult').innerHTML=`<div class="recommend" style="margin-top:16px"><strong>Predicted Coal B efficiency: ${effB.toFixed(2)}%</strong><br>Change versus Coal A: ${delta>=0?'+':''}${delta.toFixed(2)} percentage points.<br><small>Screening estimate only. Confirm with the actual ANSYS case.</small></div>`;}
+function resetInputs(){const d={gcv:3000,load:500,temp:42,humidity:35,excessAir:18,carbon:45,hydrogen:3.2,oxygen:8.5,nitrogen:1.1,sulfur:.5,ash:30,moisture:11.7};Object.entries(d).forEach(([k,v])=>$(k).value=v);$('season').value='Summer';updateTotal();$('validation').style.display='none';setProgress(0,'Simulation job ready');setStatus('ready');}
+function clearLog(){$('log').innerHTML='<span class="empty">Awaiting simulation...</span>';}
+function exportHistory(){if(!runs.length){alert('No completed simulation to export.');return;}const rows=[['Run ID','Date/Time','GCV','Load','Season','Efficiency','FEGT','NOx','Status'],...runs.map(r=>[r.id,r.time.toISOString(),r.gcv,r.load,r.season,r.eff.toFixed(2),r.fegt.toFixed(0),r.nox.toFixed(0),r.status])];const csv=rows.map(x=>x.join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='boiler_simulation_history.csv';a.click();URL.revokeObjectURL(a.href);}
+function openAbout(){$('aboutModal').classList.add('open')}function closeAbout(){$('aboutModal').classList.remove('open')}
+function drawChart(){const c=$('chart'),ctx=c.getContext('2d'),rect=c.getBoundingClientRect(),dpr=window.devicePixelRatio||1;c.width=rect.width*dpr;c.height=rect.height*dpr;ctx.scale(dpr,dpr);const w=rect.width,h=rect.height,m={l:52,r:18,t:15,b:38};ctx.clearRect(0,0,w,h);ctx.strokeStyle='#dce4ee';ctx.fillStyle='#667085';ctx.font='11px Segoe UI';for(let k=0;k<=4;k++){const y=m.t+(h-m.t-m.b)*k/4;ctx.beginPath();ctx.moveTo(m.l,y);ctx.lineTo(w-m.r,y);ctx.stroke();ctx.fillText(['1e0','1e-1','1e-2','1e-3','1e-4'][k],8,y+4)}ctx.fillText('Iterations',w/2-20,h-8);if(!chartData.length)return;const colors={c:'#2563eb',e:'#f97316',t:'#059669'};Object.keys(colors).forEach(key=>{ctx.strokeStyle=colors[key];ctx.lineWidth=2;ctx.beginPath();chartData.forEach((p,i)=>{const x=m.l+(w-m.l-m.r)*(p.i/250);const exp=Math.min(4,-Math.log10(Math.max(p[key],1e-4)));const y=m.t+(h-m.t-m.b)*(exp/4);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke()});}
+window.addEventListener('resize',drawChart);updateTotal();drawChart();
+</script>
+</body>
+</html>
